@@ -23,7 +23,6 @@ describe('FilterBuilder Component', () => {
     render(<FilterBuilder />);
     
     // Check for basic UI elements
-    expect(screen.getByText('Filter Builder')).toBeInTheDocument();
     expect(screen.getByText('Apply Filter')).toBeInTheDocument();
     
     // Check for initial placeholder text

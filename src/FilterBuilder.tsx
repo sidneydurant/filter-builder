@@ -226,10 +226,8 @@ const FilterBuilder: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-4xl mx-auto p-4">
-      <h2 className="text-xl font-bold mb-4">Filter Builder</h2>
-      
-      <div className="relative">
+    <div className="flex items-center justify-left w-full mx-auto pl-4">
+      <div className="flex-grow">
         {/* Editable filter area */}
         <div 
           ref={editableRef}
@@ -243,8 +241,10 @@ const FilterBuilder: React.FC = () => {
           {/* Render completed filter pills */}
           {filterPills.map((pill, index) => (
             <FilterPill key={`pill-${index}`} pill={pill} />
+            /* <span>AND</span> TODO: I think I prefer not having this, but revisit later */
           ))}
           
+          {/* TODO: create a FilterPart component, or make FilterPill able to handle both */}
           {/* Render the building filter parts */}
           {currentFilterParts.column && (
             <div className="px-2 py-1 rounded-l-md bg-blue-500 text-white font-medium text-sm">
@@ -268,9 +268,9 @@ const FilterBuilder: React.FC = () => {
           {/* Render the placeholder*/}
           {!currentInput && (
             <div className="text-sm text-gray-500">
-            {currentFilterState === 'column' && 'Select a column...'}
-            {currentFilterState === 'operator' && 'Select an operator...'}
-            {currentFilterState === 'value' && 'Type a value...'}
+            {currentFilterState === 'column' && 'Enter a column name...'}
+            {currentFilterState === 'operator' && 'Enter an operator...'}
+            {currentFilterState === 'value' && 'Enter a value...'}
           </div>
           )}
         </div>
@@ -289,7 +289,7 @@ const FilterBuilder: React.FC = () => {
       {/* Submit button */}
       <button
         onClick={handleSubmit}
-        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 self-start"
+        className="m-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 self-start"
       >
         Apply Filter
       </button>
