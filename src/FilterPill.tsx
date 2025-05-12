@@ -1,0 +1,16 @@
+import React from 'react';
+import { FilterPill as FilterPillType } from './types';
+
+interface FilterPillProps {
+  pill: FilterPillType;
+}
+
+const FilterPill: React.FC<FilterPillProps> = ({ pill }) => {
+  return (
+    <div className="px-2 py-1 rounded-md bg-blue-600 text-white font-medium text-sm">
+      {pill.value}
+    </div>
+  );
+};
+
+export default FilterPill;
