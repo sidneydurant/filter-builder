@@ -1,7 +1,10 @@
+// default operators *may* need to be different for two columns of the same type?
+// Would prefer consistency of a default operator per column type if possible.
 export interface Column {
   id: string;
   label: string;
   type: string;
+  defaultOperatorId: string;
   // TODO values: Value[] | Promise<Value[]>;
 }
 

@@ -5,14 +5,14 @@ import { Column, Operator, FilterPill as FilterPillType } from './types';
 function App() {
 
   // This parent component is responsible for fetching columns, operators, 
-  // and initial (previously saved) filters from the server
+  // and initial (previously saved) filters from the server.
   const columns: Column[] = [
-    { id: "name", label: "Name", type: "string" },
-    { id: "company", label: "Company", type: "string" },
-    { id: "city", label: "City", type: "string" },
-    { id: "state", label: "State", type: "picklist" },
-    { id: "info", label: "Info", type: "string" },
-    { id: "age", label: "Age", type: "number" }
+    { id: "name", label: "Name", type: "string", defaultOperatorId: "contains" },
+    { id: "company", label: "Company", type: "string", defaultOperatorId: "contains" },
+    { id: "city", label: "City", type: "string", defaultOperatorId: "contains" },
+    { id: "state", label: "State", type: "picklist", defaultOperatorId: "equals" },
+    { id: "info", label: "Info", type: "string", defaultOperatorId: "contains" },
+    { id: "age", label: "Age", type: "number", defaultOperatorId: "equals" }
   ];
 
   const operators: Operator[] = [
