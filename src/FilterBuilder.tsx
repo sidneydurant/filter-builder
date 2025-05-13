@@ -267,6 +267,11 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
         setFilterPills(newPills);
       }
     }
+
+    // No matter what, we do not want to create a new line
+    if (e.key === 'Enter') {
+      e.preventDefault();
+    }
   };
 
   // Handle input changes
