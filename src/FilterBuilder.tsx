@@ -152,8 +152,75 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
     }
   };
 
+  // TODO: Way too much business logic. Lots of repeated code. Should be refactored:
+  // 1: Create file with helpers: too verbose. Half the code would be parameters
+  // 2: Helper functions: could be added to this component & directly access state
+  // 3: [PREFERRED] State machine using reducers: This seems like the best approach,
+  //      although I won't have the time to implement it
+
   // Handle keyboard events
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    // Show all suggestions when down arrow is pressed with no input
+    if (e.key === 'ArrowDown' && currentInput === '' && !showSuggestions) {
+      e.preventDefault();
+      // Set suggestions based on current filter state
+      if (currentFilterState === 'column') {
+        setSuggestions(columns);
+      } else if (currentFilterState === 'operator') {
+        setSuggestions(operators);
+      }
+      // Show suggestions dropdown
+      setShowSuggestions(true);
+      setSelectedSuggestionIndex(0);
+      return;
+    }
+
+    // Handle shift+tab to go back to previous state
+    if (e.key === 'Tab' && e.shiftKey) {
+      e.preventDefault();
+      
+      if (currentFilterState === 'column' && filterPills.length > 0 && currentInput === '') {
+        // if we're in column state and there are pills, and no input, go back to editing the last pill
+        const newPills = [...filterPills];
+        const lastPill = newPills.pop();
+        if (lastPill) {
+          // Go back to value state
+          const {column, operator, value} = lastPill.components;
+          setCurrentFilterParts({column, operator});
+          setCurrentFilterState('value');
+          // Restore value as input
+          if (inputRef.current) {
+            inputRef.current.textContent = value;
+            setCurrentInput(value);
+          }
+          setFilterPills(newPills);
+        }
+      } else if(currentFilterState === 'operator' && currentFilterParts.column) {
+        // Go back to column state
+        setCurrentFilterState('column');
+        // Restore column as input
+        if (inputRef.current) {
+          inputRef.current.textContent = currentFilterParts.column;
+          setCurrentInput(currentFilterParts.column);
+        }
+        // Clear current filter parts
+        setCurrentFilterParts({});
+      } 
+      else if (currentFilterState === 'value' && currentFilterParts.column) {
+        // Go back to operator state
+        setCurrentFilterState('operator');
+        // Restore operator as input if it exists
+        if (inputRef.current && currentFilterParts.operator) {
+          inputRef.current.textContent = currentFilterParts.operator;
+          setCurrentInput(currentFilterParts.operator);
+        }
+        // Modify filter parts to keep only column
+        setCurrentFilterParts({
+          column: currentFilterParts.column
+        });
+      }
+      return;
+    }
 
     if (showSuggestions && suggestions.length > 0) {
       // Arrow down
@@ -170,11 +237,6 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
       }
       // Enter or Tab to select
       else if ((e.key === 'Enter' || e.key === 'Tab') && currentFilterState !== 'value') {
-        e.preventDefault();
-        handleSelectSuggestion(suggestions[selectedSuggestionIndex]);
-      }
-      // Space to select if showing suggestions
-      else if (e.key === ' ' && showSuggestions && currentFilterState !== 'value') {
         e.preventDefault();
         handleSelectSuggestion(suggestions[selectedSuggestionIndex]);
       }
