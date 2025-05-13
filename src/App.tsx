@@ -8,7 +8,7 @@ function App() {
   // and initial (previously saved) filters from the server.
   const columns: Column[] = [
     { id: "name", label: "Name", type: "string", defaultOperatorId: "contains" },
-    { id: "company", label: "Company", type: "string", defaultOperatorId: "contains" },
+    { id: "company", label: "Company", type: "string", defaultOperatorId: "equals" },
     { id: "city", label: "City", type: "string", defaultOperatorId: "contains" },
     { id: "state", label: "State", type: "picklist", defaultOperatorId: "equals" },
     { id: "info", label: "Info", type: "string", defaultOperatorId: "contains" },

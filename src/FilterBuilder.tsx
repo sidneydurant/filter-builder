@@ -108,12 +108,13 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
     // Update the current filter parts based on the current state
     if (currentFilterState === 'column') {
       const column = suggestion as Column;
+      const defaultOperator = operators.find(op => op.id === column.defaultOperatorId);
       setCurrentFilterParts({
         ...currentFilterParts,
         column: column.label,
-        operator: operators.find(op => op.id === column.defaultOperatorId)?.label
+        operator: defaultOperator?.label
       });
-      setCurrentFilterState('operator');
+      setCurrentFilterState(defaultOperator ?'value' : 'operator');
     } else if (currentFilterState === 'operator') {
       const operator = suggestion as Operator;
       setCurrentFilterParts({
