@@ -5,7 +5,7 @@ export interface Column {
   label: string;
   type: string;
   defaultOperatorId: string;
-  // TODO values: Value[] | Promise<Value[]>;
+  picklistOptions?: Value[]; // for picklist columns
 }
 
 export interface Operator {

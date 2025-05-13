@@ -10,10 +10,13 @@ function App() {
     { id: "name", label: "Name", type: "string", defaultOperatorId: "contains" },
     { id: "company", label: "Company", type: "string", defaultOperatorId: "equals" },
     { id: "city", label: "City", type: "string", defaultOperatorId: "contains" },
-    { id: "state", label: "State", type: "picklist", defaultOperatorId: "equals" },
+    { id: "state", label: "State", type: "picklist", defaultOperatorId: "equals", picklistOptions: [{id: "CA", label: "CA"}, {id: "NV", label: "NV"}, {id: "OR", label: "OR"}] },
     { id: "info", label: "Info", type: "string", defaultOperatorId: "contains" },
-    { id: "age", label: "Age", type: "number", defaultOperatorId: "equals" }
+    { id: "age", label: "Age", type: "number", defaultOperatorId: "equals" },
+    { id: "is_active", label: "Is Active", type: "boolean", defaultOperatorId: "equals" },
   ];
+
+  // TODO: need a map from data types to possible operators.
 
   const operators: Operator[] = [
     { id: "equals", label: "Equals", aliases: ["=", "==", "equals", "===", "is"] },

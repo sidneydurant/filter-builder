@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import DropdownWidget from './DropdownWidget.tsx';
 import FilterPill from './FilterPill';
-import { Column, Operator, FilterPill as FilterPillType } from './types';
+import { Column, Operator, FilterPill as FilterPillType, Value } from './types';
 
 interface FilterBuilderProps {
   columns: Column[];
@@ -104,10 +104,10 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
   }, [currentFilterParts]);
 
   // Handle selection from dropdown
-  const handleSelectSuggestion = (suggestion: Column | Operator) => {
+  const handleSelectOption = (option: Column | Operator | Value) => {
     // Update the current filter parts based on the current state
     if (currentFilterState === 'column') {
-      const column = suggestion as Column;
+      const column = option as Column;
       const defaultOperator = operators.find(op => op.id === column.defaultOperatorId);
       setCurrentFilterParts({
         ...currentFilterParts,
@@ -116,7 +116,7 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
       });
       setCurrentFilterState(defaultOperator ?'value' : 'operator');
     } else if (currentFilterState === 'operator') {
-      const operator = suggestion as Operator;
+      const operator = option as Operator;
       setCurrentFilterParts({
         ...currentFilterParts,
         operator: operator.label
@@ -129,7 +129,6 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
       inputRef.current.textContent = '';
     }
     setCurrentInput('');
-    
   };
 
   // Focus management
@@ -250,7 +249,7 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
       // Enter or Tab to select
       else if ((e.key === 'Enter' || e.key === 'Tab') && currentFilterState !== 'value') {
         e.preventDefault();
-        handleSelectSuggestion(suggestions[selectedSuggestionIndex]);
+        handleSelectOption(suggestions[selectedSuggestionIndex]);
       }
     } else if (currentFilterState === 'value' && (e.key === 'Enter' || e.key === 'Tab') && currentInput.trim() !== '') {
       e.preventDefault();
@@ -299,7 +298,7 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
 
   return (
     <div className="flex items-center justify-left w-full mx-auto pl-4">
-      <div className="flex-grow">
+      <div className="relative flex-grow">
         {/* Editable filter area */}
         <div 
           ref={editableRef}
@@ -348,9 +347,9 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
         {/* Suggestions dropdown */}
         {showSuggestions && (
           <DropdownWidget 
-            suggestions={suggestions}
+            options={suggestions}
             selectedIndex={selectedSuggestionIndex}
-            onSelect={handleSelectSuggestion}
+            onSelect={handleSelectOption}
             onHoverChange={setSelectedSuggestionIndex}
           />
         )}
