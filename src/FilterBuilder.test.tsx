@@ -4,7 +4,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import FilterBuilder from './FilterBuilder';
 import '@testing-library/jest-dom';
-import { fail } from 'assert';
+import { Column, Operator } from './types';
 
 // Mock the dependencies completely
 vi.mock('./DropdownWidget.tsx', () => ({
@@ -15,6 +15,22 @@ vi.mock('./FilterPill', () => ({
   default: ({ pill }) => <div data-testid="mocked-filter-pill">{pill.value}</div>
 }));
 
+  const columns: Column[] = [
+    { id: "name", label: "Name", type: "string", defaultOperatorId: "contains" },
+    { id: "company", label: "Company", type: "string", defaultOperatorId: "contains" },
+    { id: "city", label: "City", type: "string", defaultOperatorId: "contains" },
+    { id: "state", label: "State", type: "picklist", defaultOperatorId: "equals" },
+    { id: "info", label: "Info", type: "string", defaultOperatorId: "contains" },
+    { id: "age", label: "Age", type: "number", defaultOperatorId: "equals" }
+  ];
+
+  const operators: Operator[] = [
+    { id: "equals", label: "Equals", aliases: ["=", "==", "equals", "===", "is"] },
+    { id: "not_equals", label: "Not Equals", aliases: ["!=", "!==", "not equals", "not equal", "is not"] },
+    { id: "contains", label: "Contains", aliases: ["contains", "includes"] },
+    { id: "does_not_contain", label: "Does Not Contain", aliases: ["does not include", "doesnt include", "does not contain", "doesnt contain"] }
+  ];
+  
 describe('FilterBuilder Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -23,7 +39,8 @@ describe('FilterBuilder Component', () => {
   // --------------------- Basic Rendering Tests ---------------------
 
   it('renders the component with expected UI elements', () => {
-    render(<FilterBuilder />);
+    const onSubmit = vi.fn<(filters: any[]) => void>();
+    render(<FilterBuilder columns={columns} operators={operators} onSubmit={onSubmit}/>);
     
     // Check for basic UI elements
     expect(screen.getByText('Apply Filter')).toBeInTheDocument();
@@ -45,17 +62,18 @@ describe('FilterBuilder Component', () => {
   // --------------------- User Interaction Tests ---------------------
 
   it('handles submit button click', () => {
-    const consoleSpy = vi.spyOn(console, 'log');
-    render(<FilterBuilder />);
+    const onSubmit = vi.fn<(filters: any[]) => void>();
+    render(<FilterBuilder columns={columns} operators={operators} onSubmit={onSubmit} />);
     
     // Click the Apply Filter button
     const submitButton = screen.getByText('Apply Filter');
     fireEvent.click(submitButton);
     
     // Verify console.log was called with expected empty filter
-    expect(consoleSpy).toHaveBeenCalledWith('Filter:', '');
+    expect(onSubmit).toHaveBeenCalledWith([]);
   });
 
+  // it('handles preset filters', () => { fail('not yet implemented'); });
   // it('handles text input in column selection state', () => { fail('not yet implemented'); });
   // it('handles text input in operator selection state', () => { fail('not yet implemented'); });
   // it('handles text input in value input state', () => { fail('not yet implemented'); });
