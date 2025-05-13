@@ -3,27 +3,16 @@ import DropdownWidget from './DropdownWidget.tsx';
 import FilterPill from './FilterPill';
 import { Column, Operator, FilterPill as FilterPillType } from './types';
 
-// Define our columns and operators
-// TODO: Make this dynamic based on the data (i.e. add a function that returns the relevant data, potentially from server, or from cache if already fetched)
-const columns: Column[] = [
-  { id: "name", label: "Name", type: "string" },
-  { id: "company", label: "Company", type: "string" },
-  { id: "city", label: "City", type: "string" },
-  { id: "state", label: "State", type: "picklist" },
-  { id: "info", label: "Info", type: "string" },
-  { id: "age", label: "Age", type: "number" }
-];
+interface FilterBuilderProps {
+  columns: Column[];
+  operators: Operator[];
+  onSubmit: (filters: FilterPillType[]) => void;
+  initialFilters?: FilterPillType[];
+}
 
-const operators: Operator[] = [
-  { id: "equals", label: "Equals", aliases: ["=", "==", "equals", "===", "is"] }, /* TODO: revisit + add aliases */
-  { id: "not_equals", label: "Not Equals", aliases: ["!=", "!==", "not equals", "not equal", "is not"] },
-  { id: "contains", label: "Contains", aliases: ["contains", "includes"] },
-  { id: "does_not_contain", label: "Does Not Contain", aliases: ["does not include", "doesnt include", "does not contain", "doesnt contain"] }
-];
-
-const FilterBuilder: React.FC = () => {
+const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSubmit, initialFilters = [] }) => {
   // State for the completed filter pills
-  const [filterPills, setFilterPills] = useState<FilterPillType[]>([]);
+  const [filterPills, setFilterPills] = useState<FilterPillType[]>(initialFilters);
   
   // The current filter being built
   const [currentFilterParts, setCurrentFilterParts] = useState<{
@@ -222,7 +211,7 @@ const FilterBuilder: React.FC = () => {
 
   // Handle submit button click
   const handleSubmit = () => {
-    console.log("Filter:", filterPills.map(pill => pill.value).join(' AND '));
+    onSubmit(filterPills);
   };
 
   return (

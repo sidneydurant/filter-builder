@@ -5,6 +5,8 @@ interface FilterPillProps {
   pill: FilterPillType;
 }
 
+// TODO: add support for partial pills and integrate into here
+
 const FilterPill: React.FC<FilterPillProps> = ({ pill }) => {
   return (
     <div className="px-2 py-1 rounded-md bg-blue-600 text-white font-medium text-sm">
