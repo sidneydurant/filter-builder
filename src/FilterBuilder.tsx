@@ -152,11 +152,23 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
     }
   };
 
-  // TODO: Way too much business logic. Lots of repeated code. Should be refactored:
+  // TODO: Way too much business logic. Lots of repeated code. Should be refactored.
+  // no matter which approach is taken, click and keyboard events should both use
+  // shared logic to update state.
   // 1: Create file with helpers: too verbose. Half the code would be parameters
   // 2: Helper functions: could be added to this component & directly access state
   // 3: [PREFERRED] State machine using reducers: This seems like the best approach,
-  //      although I won't have the time to implement it
+  //    I won't have the time to implement this
+
+  const handleClick = () => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+    // TODO: show all suggestions when clicked if no input (refactor logic from handleKeyDown
+    // into reusable function/helper/whatever)
+
+    // TODO: add event listener on document to hide suggestions when you click outside of the input
+  };
 
   // Handle keyboard events
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -293,9 +305,7 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
           ref={editableRef}
           className="min-h-12 p-3 border border-gray-300 rounded bg-white flex flex-wrap items-center gap-1"
           onClick={() => {
-            if (inputRef.current) {
-              inputRef.current.focus();
-            }
+            handleClick();
           }}
         >
           {/* Render completed filter pills */}
