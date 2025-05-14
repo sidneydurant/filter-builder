@@ -10,7 +10,7 @@ interface FilterPillProps {
 const FilterPill: React.FC<FilterPillProps> = ({ pill }) => {
   return (
     <div className="px-2 py-1 rounded-md bg-red-700 text-white font-medium text-sm">
-      {pill.value}
+      {pill.column} {pill.operator} {pill.value}
     </div>
   );
 };

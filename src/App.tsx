@@ -27,13 +27,9 @@ function App() {
 
   const initialFilters: FilterPillType[] = [
     {
-      type: 'filter',
-      value: 'Company Equals Streak',
-      components: {
-        column: 'Company',
-        operator: 'Equals',
-        value: 'Streak'
-      }
+      column: 'Company',
+      operator: 'Equals',
+      value: 'Streak'
     }
   ];
 

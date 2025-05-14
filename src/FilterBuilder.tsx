@@ -13,7 +13,9 @@ interface FilterBuilderProps {
 const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSubmit, initialFilters = [] }) => {
   // State for the completed filter pills
   const [filterPills, setFilterPills] = useState<FilterPillType[]>(initialFilters);
-  
+
+  // TODO: every render, rebuild currentFilterParts based on the last filterPill.
+
   // The current filter being built
   const [currentFilterParts, setCurrentFilterParts] = useState<{
     column?: string;
@@ -23,7 +25,10 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
 
   // Tracks where in the filter building process we are
   // broken because if value is set we should have already generated the next filter pill
-  const currentFilterState: 'column' | 'operator' | 'value' | 'invalid' = currentFilterParts.value ? 'invalid' : (currentFilterParts.operator ? 'value' : currentFilterParts.column ? 'operator' : 'column');
+  const currentFilterState: 'column' | 'operator' | 'value' | 'invalid' = 
+    currentFilterParts.value ? 'invalid' : 
+    (currentFilterParts.operator ? 'value' : 
+    (currentFilterParts.column ? 'operator' : 'column'));
   
   // Tracks the current input and suggestions
   const [currentInput, setCurrentInput] = useState<string>('');
@@ -80,13 +85,9 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
     if (currentFilterParts.column && currentFilterParts.operator && currentFilterParts.value) {
       // Create new filter pill
       const newFilterPill: FilterPillType = {
-        type: 'filter',
-        value: `${currentFilterParts.column} ${currentFilterParts.operator} ${currentFilterParts.value}`,
-        components: {
-          column: currentFilterParts.column,
-          operator: currentFilterParts.operator,
-          value: currentFilterParts.value
-        }
+        column: currentFilterParts.column,
+        operator: currentFilterParts.operator,
+        value: currentFilterParts.value
       };
       
       // Add the new filter pill
@@ -194,12 +195,12 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
         const lastPill = newPills.pop();
         if (lastPill) {
           // Go back to value state
-          const {column, operator, value} = lastPill.components;
+          const {column, operator, value} = lastPill;
           setCurrentFilterParts({column, operator});
           // Restore value as input
           if (inputRef.current) {
-            inputRef.current.textContent = value;
-            setCurrentInput(value);
+            inputRef.current.textContent = value || '';
+            setCurrentInput(value || '');
           }
           setFilterPills(newPills);
         }

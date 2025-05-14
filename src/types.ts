@@ -20,12 +20,7 @@ export interface Value {
 }
 
 export interface FilterPill {
-  type: 'filter';
-  value: string;
-  // Store components for easier manipulation
-  components: {
-    column: string;
-    operator: string;
-    value: string;
-  };
+  column?: string;
+  operator?: string;
+  value?: string;
 }
