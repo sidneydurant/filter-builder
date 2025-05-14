@@ -22,7 +22,8 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
   }>({});
 
   // Tracks where in the filter building process we are
-  const [currentFilterState, setCurrentFilterState] = useState<'column' | 'operator' | 'value'>('column');
+  // broken because if value is set we should have already generated the next filter pill
+  const currentFilterState: 'column' | 'operator' | 'value' | 'invalid' = currentFilterParts.value ? 'invalid' : (currentFilterParts.operator ? 'value' : currentFilterParts.column ? 'operator' : 'column');
   
   // Tracks the current input and suggestions
   const [currentInput, setCurrentInput] = useState<string>('');
@@ -71,7 +72,7 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
     
     // Reset selection index when suggestions change
     setSelectedSuggestionIndex(0);
-  }, [currentInput, currentFilterState]);
+  }, [currentInput, currentFilterParts]);
 
   // Watch for changes to currentFilterParts and create a pill when all parts are present
   useEffect(() => {
@@ -93,7 +94,6 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
       
       // Reset current filter parts
       setCurrentFilterParts({});
-      setCurrentFilterState('column');
       
       // Clear the input
       if (inputRef.current) {
@@ -114,14 +114,12 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
         column: column.label,
         operator: defaultOperator?.label
       });
-      setCurrentFilterState(defaultOperator ?'value' : 'operator');
     } else if (currentFilterState === 'operator') {
       const operator = option as Operator;
       setCurrentFilterParts({
         ...currentFilterParts,
         operator: operator.label
       });
-      setCurrentFilterState('value');
     }
     
     // Clear the input content and focus back on it
@@ -137,7 +135,7 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [currentFilterState, filterPills.length]);
+  }, [currentFilterParts, filterPills.length]);
 
   // Handle value entry completion
   const handleValueComplete = () => {
@@ -198,7 +196,6 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
           // Go back to value state
           const {column, operator, value} = lastPill.components;
           setCurrentFilterParts({column, operator});
-          setCurrentFilterState('value');
           // Restore value as input
           if (inputRef.current) {
             inputRef.current.textContent = value;
@@ -207,8 +204,6 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
           setFilterPills(newPills);
         }
       } else if(currentFilterState === 'operator' && currentFilterParts.column) {
-        // Go back to column state
-        setCurrentFilterState('column');
         // Restore column as input
         if (inputRef.current) {
           inputRef.current.textContent = currentFilterParts.column;
@@ -218,9 +213,7 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
         setCurrentFilterParts({});
       } 
       else if (currentFilterState === 'value' && currentFilterParts.column) {
-        // Go back to operator state
-        setCurrentFilterState('operator');
-        // Restore operator as input if it exists
+        // Restore operator as input
         if (inputRef.current && currentFilterParts.operator) {
           inputRef.current.textContent = currentFilterParts.operator;
           setCurrentInput(currentFilterParts.operator);
@@ -262,11 +255,9 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
       
       // If we're building a filter, go back one step
       if (currentFilterState === 'operator' && currentFilterParts.column) {
-        setCurrentFilterState('column');
         setCurrentFilterParts({});
       } 
       else if (currentFilterState === 'value' && currentFilterParts.operator) {
-        setCurrentFilterState('operator');
         setCurrentFilterParts({
           column: currentFilterParts.column
         });
@@ -310,18 +301,17 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
           {/* Render completed filter pills */}
           {filterPills.map((pill, index) => (
             <FilterPill key={`pill-${index}`} pill={pill} />
-            /* <span>AND</span> TODO: I think I prefer not having this, but revisit later */
           ))}
           
           {/* TODO: create a FilterPart component, or make FilterPill able to handle both */}
           {/* Render the building filter parts */}
           {currentFilterParts.column && (
-            <div className="px-2 py-1 rounded-l-md bg-blue-500 text-white font-medium text-sm">
+            <div className="px-2 py-1 rounded-l-md bg-red-700 text-white font-medium text-sm">
               {currentFilterParts.column}
             </div>
           )}
           {currentFilterParts.operator && (
-            <div className="px-2 py-1 bg-purple-500 text-white font-medium text-sm">
+            <div className="px-2 py-1 bg-purple-700 text-white font-medium text-sm">
               {currentFilterParts.operator}
             </div>
           )}
@@ -358,7 +348,7 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
       {/* Submit button */}
       <button
         onClick={handleSubmit}
-        className="m-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 self-start"
+        className="m-2 px-4 py-2 bg-red-700 text-white rounded-md hover:bg-red-800 self-start"
       >
         Apply Filter
       </button>
