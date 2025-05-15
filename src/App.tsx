@@ -29,7 +29,7 @@ function App() {
     {
       column: 'Company',
       operator: 'Equals',
-      value: 'Streak'
+      value: 'Sidco'
     }
   ];
 

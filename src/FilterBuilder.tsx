@@ -130,6 +130,17 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
     // Focus the input whenever filterState changes or a pill is created
     if (inputRef.current) {
       inputRef.current.focus();
+      // For contentEditable elements, we need to use the Selection and Range APIs
+      const selection = window.getSelection();
+      const range = document.createRange();
+      
+      // Set position to end of content
+      range.selectNodeContents(inputRef.current);
+      range.collapse(false); // false means collapse to end
+      
+      // Apply the selection
+      selection?.removeAllRanges();
+      selection?.addRange(range);
     }
   }, [currentFilterParts, filterPills.length]);
 
