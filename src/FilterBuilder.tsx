@@ -14,17 +14,12 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
   // State for the completed filter pills
   const [filterPills, setFilterPills] = useState<FilterPillType[]>(initialFilters);
 
-  // TODO: every render, rebuild currentFilterParts based on the last filterPill.
-
   // The current filter being built
-  const [currentFilterParts, setCurrentFilterParts] = useState<{
-    column?: string;
-    operator?: string;
-    value?: string;
-  }>({});
+  const [currentFilterParts, setCurrentFilterParts] = useState<FilterPillType>({});
 
   // Tracks where in the filter building process we are
-  // broken because if value is set we should have already generated the next filter pill
+  // 'invalid' because if value is set we should have added the pill to filterPills - we 
+  // should not have a completed pill in 'currentFilterParts"
   const currentFilterState: 'column' | 'operator' | 'value' | 'invalid' = 
     currentFilterParts.value ? 'invalid' : 
     (currentFilterParts.operator ? 'value' : 
@@ -299,24 +294,12 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({ columns, operators, onSub
             handleClick();
           }}
         >
-          {/* Render completed filter pills */}
-          {filterPills.map((pill, index) => (
+          {/* Render the filter pills*/}
+          {[...filterPills, currentFilterParts].map((pill, index) => (
             <FilterPill key={`pill-${index}`} pill={pill} />
           ))}
           
-          {/* TODO: create a FilterPart component, or make FilterPill able to handle both */}
-          {/* Render the building filter parts */}
-          {currentFilterParts.column && (
-            <div className="px-2 py-1 rounded-l-md bg-red-700 text-white font-medium text-sm">
-              {currentFilterParts.column}
-            </div>
-          )}
-          {currentFilterParts.operator && (
-            <div className="px-2 py-1 bg-purple-700 text-white font-medium text-sm">
-              {currentFilterParts.operator}
-            </div>
-          )}
-          
+          {/* contenteditable span */}
           <span
             ref={inputRef}
             className="outline-none min-w-1 inline-block"
