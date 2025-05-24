@@ -35,7 +35,7 @@ function App() {
 
   // Parent component is responsible for using/applying the created filters
   const handleApplyFilters = (filters: FilterPillType[]) => {
-    console.log("Filter:", filters.map(pill => pill.value).join(' AND '));
+    alert(`Filter: ${filters.map(pill => pill.column + ' ' + pill.operator + ' ' + pill.value).join(' AND ')}`);
   };
 
   return (
