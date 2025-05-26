@@ -1,42 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import FilterBuilder from './FilterBuilder'
 import { Column, Operator, FilterPill as FilterPillType } from './types';
+import { fetchOperators, fetchColumns, fetchInitialFilters } from "./api";
 
 function App() {
 
-  // This parent component is responsible for fetching columns, operators, 
-  // and initial (previously saved) filters from the server.
-  const columns: Column[] = [
-    { id: "name", label: "Name", type: "string", defaultOperatorId: "contains" },
-    { id: "company", label: "Company", type: "string", defaultOperatorId: "equals" },
-    { id: "city", label: "City", type: "string", defaultOperatorId: "contains" },
-    { id: "state", label: "State", type: "picklist", defaultOperatorId: "equals", picklistOptions: [{id: "CA", label: "CA"}, {id: "NV", label: "NV"}, {id: "OR", label: "OR"}] },
-    { id: "info", label: "Info", type: "string", defaultOperatorId: "contains" },
-    { id: "age", label: "Age", type: "number", defaultOperatorId: "equals" },
-    { id: "is_active", label: "Is Active", type: "boolean", defaultOperatorId: "equals" },
-  ];
+  const [operators, setOperators] = useState<Operator[]>([]);
+  const [columns, setColumns] = useState<Column[]>([]);
+  const [initialFilters, setInitialFilters] = useState<FilterPillType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // TODO: need a map from data types to possible operators.
+  useEffect(() => {
+    Promise.all([fetchOperators(), fetchColumns(), fetchInitialFilters()])
+      .then(([ops, cols, initialFilters]) => {
+        setOperators(ops);
+        setColumns(cols);
+        setInitialFilters(initialFilters);
+      })
+      .catch((error) => {
+        setError(error.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
-  const operators: Operator[] = [
-    { id: "equals", label: "Equals", aliases: ["=", "==", "equals", "===", "is"] },
-    { id: "not_equals", label: "Not Equals", aliases: ["!=", "!==", "not equals", "not equal", "is not"] },
-    { id: "contains", label: "Contains", aliases: ["contains", "includes"] },
-    { id: "does_not_contain", label: "Does Not Contain", aliases: ["does not include", "doesnt include", "does not contain", "doesnt contain"] }
-  ];
-
-  const initialFilters: FilterPillType[] = [
-    {
-      column: 'Company',
-      operator: 'Equals',
-      value: 'Sidco'
-    }
-  ];
-
-  // Parent component is responsible for using/applying the created filters
+  // Use the created filters
   const handleApplyFilters = (filters: FilterPillType[]) => {
     alert(`Filter: ${filters.map(pill => pill.column + ' ' + pill.operator + ' ' + pill.value).join(' AND ')}`);
   };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <>
